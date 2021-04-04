@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="dist/nmd-template-engine.js"></script>
+</head>
+<body>
+	<nmd-context value="{health:5}">
+		Hello traveler!<br>
+		<nmd-b if="this.health <= 0">
+			You are dead.
+		</nmd-b>
+		<nmd-b if="this.health > 0">
+			You look great.
+		</nmd-b>
+	</nmd-context>
+</body>
+</html>

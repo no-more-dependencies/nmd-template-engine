@@ -1,0 +1,25 @@
+{
+	"name": "nmd-template-engine",
+	"version": "1.0.0",
+	"description": "Simple template engine using web components.",
+	"main": "./js/main.js",
+	"browser": "./dist/nmd-template-engine.js",
+	"devDependencies": {
+		"webpack": "^4.44.2",
+		"webpack-cli": "^3.3.12"
+	},
+	"scripts": {
+		"build": "webpack"
+	},
+	"keywords": [
+		"webcomponent",
+		"tag",
+		"template engine"
+	],
+	"author": "Lukáš Kotržena <lkotrzena@gmail.com> (https://kotrzena.eu)",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/no-more-dependencies/nmd-template-engine.git"
+	}
+}
