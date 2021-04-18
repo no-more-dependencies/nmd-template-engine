@@ -8,13 +8,17 @@
 	<script src="dist/nmd-template-engine.js"></script>
 </head>
 <body>
-	<nmd-context value="{health:5}">
+	<nmd-context value="{health:5, items:['apple', 'sword']}">
 		Hello traveler!<br>
+		Health: <nmd-b text="this.health"></nmd-b>
 		<nmd-b if="this.health <= 0">
 			You are dead.
 		</nmd-b>
 		<nmd-b if="this.health > 0">
 			You look great.
+		</nmd-b>
+		<nmd-b for="a of this.items">
+			<nmd-b text="a"></nmd-b>
 		</nmd-b>
 	</nmd-context>
 </body>
