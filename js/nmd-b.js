@@ -15,18 +15,20 @@ class NmdBlock extends HTMLParsedElement {
 
 	parsedCallback(){
 		if(this.hasAttribute("for")){
+			/** @type {HTMLTemplateElement} */
 			let templateElement = document.createElement("template");
 			let nodes = [...this.childNodes];
 			this.append(templateElement);
 			for(let child of nodes){
-				templateElement.append(child);
+				templateElement.content.append(child);
 			}
+			this.templateElement = templateElement;
 			this.runLoop();
 		}
 	}
 
 	getContext(){
-		let context = this.closest("nmd-context");
+		let context = this.parentElement.closest("nmd-context");
 		return context.getScope();
 	}
 
@@ -60,9 +62,18 @@ class NmdBlock extends HTMLParsedElement {
 		}
 		let varName = parts[0].trim();
 		let collection = this.evaluateCode(parts[1]);
-		let iterator = collection.entries();
-		// TODO
 
+		for(let item of collection){
+			let itemContent = this.templateElement.content.cloneNode(true);
+
+			/** @type {NmdContext} */
+			let itemContext = document.createElement("nmd-context");
+			itemContext.name = varName;
+			itemContext.value = item;
+
+			itemContext.appendChild(itemContent);
+			this.appendChild(itemContext);
+		}
 	}
 
 	updateText(){

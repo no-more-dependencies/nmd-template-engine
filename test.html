@@ -11,7 +11,8 @@
 	<nmd-context value="{health:5, items:['apple', 'sword']}">
 		Hello traveler!<br>
 		Health: <nmd-b text="this.health"></nmd-b>
-		<nmd-b if="this.health <= 0">
+		<button onclick="NmdContext.find(this).value.health--;NmdContext.find(this).update()">1 dmg</button>
+		<nmd-b if="this.health &lt;= 0">
 			You are dead.
 		</nmd-b>
 		<nmd-b if="this.health > 0">
