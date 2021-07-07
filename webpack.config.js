@@ -1,5 +1,5 @@
 module.exports = {
-	mode: "production",
+	mode: "development",
 	entry: {
 		"nmd-template-engine": __dirname + "/js/webpack-entry.js",
 	},
