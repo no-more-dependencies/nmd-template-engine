@@ -1,35 +1,43 @@
 import evaluateCode from "./code-evaluator";
+import NmdBlock from "./nmd-b";
 
 export default
 class NmdContext extends HTMLElement {
+	static find(element){
+		return element.closest("nmd-context");
+	}
+
 	constructor(){
 		super();
+		/** @type {string?} */
+		this.name = null;
 		this.value = {};
 	}
 
 	connectedCallback(){
-		let value = this.getAttribute("value");
-		if(value)
-			this.value = evaluateCode(value, [this, {}], true);
-		this.update();
+		if(this.hasAttribute("value")){
+			let value = this.getAttribute("value");
+			if(value)
+				this.value = evaluateCode(value, [this, {}], true);
+		}
 	}
 
 	update(){
 		for(let block of this.querySelectorAll("nmd-b")){
+			console.log("update", block, typeof(block), block instanceof NmdBlock, block.update);
 			block.update();
 		}
 	}
 
 	getScope(){
-		let parent = this.closest("nmd-context");
+		let parent = this.parentElement.closest("nmd-context");		
 		let scope = [undefined, {}];
 		if(parent)
 			scope = parent.getScope();
-		let name = this.getAttribute("name");
-		if(name === null)
+		if(this.name === null)
 			scope[0] = this.value;
 		else
-			scopde[1][name] = this.value;
+			scope[1][this.name] = this.value;
 		return scope;
 	}
 }
