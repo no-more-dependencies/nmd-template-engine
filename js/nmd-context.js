@@ -24,6 +24,7 @@ class NmdContext extends HTMLElement {
 
 	update(){
 		for(let block of this.querySelectorAll("nmd-b")){
+			console.log("update", block, typeof(block), block instanceof NmdBlock, block.update);
 			block.update();
 		}
 	}
