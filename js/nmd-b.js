@@ -10,31 +10,35 @@ class NmdBlock extends HTMLParsedElement {
 
 	connectedCallback(){
 		super.connectedCallback();
-		this.update();
+		if(!this.hasAttribute("for")) // If it does not require content to be parsed, update it now.
+			this.update();
 	}
 
 	parsedCallback(){
-		if(this.hasAttribute("for")){
-			/** @type {HTMLTemplateElement} */
-			let templateElement = document.createElement("template");
+		if(this.hasAttribute("for")){ // Update for loop after content is parsed.
+			this.template = document.createDocumentFragment();
 			let nodes = [...this.childNodes];
-			this.append(templateElement);
 			for(let child of nodes){
-				templateElement.content.append(child);
+				this.template.append(child);
 			}
-			this.templateElement = templateElement;
 			this.runLoop();
 		}
 	}
 
+	/**
+	 * @returns {NmdContext?}
+	 */
 	getContext(){
-		let context = this.parentElement.closest("nmd-context");
-		return context.getScope();
+		return this.parentElement.closest("nmd-context");
+	}
+
+	getScope(){
+		return this.getContext().getScope();
 	}
 
 	evaluateCode(code){
 		try {
-			return evaluateCode(code, this.getContext(), true);
+			return evaluateCode(code, this.getScope(), true);
 		} catch(e){
 			console.error("Error evaluating code for nmd-b", this, e);
 		}
@@ -55,6 +59,7 @@ class NmdBlock extends HTMLParsedElement {
 		let def = this.getAttribute("for");
 		if(def === null)
 			return;
+		this.innerHTML = "";
 		let parts = def.split(/\s+of\s+/);
 		if(parts.length != 2){
 			console.error(`Wrong for syntax. Expected "item of items".`, this);
@@ -64,7 +69,7 @@ class NmdBlock extends HTMLParsedElement {
 		let collection = this.evaluateCode(parts[1]);
 
 		for(let item of collection){
-			let itemContent = this.templateElement.content.cloneNode(true);
+			let itemContent = this.template.cloneNode(true);
 
 			/** @type {NmdContext} */
 			let itemContext = document.createElement("nmd-context");
@@ -86,7 +91,7 @@ class NmdBlock extends HTMLParsedElement {
 	}
 
 	isUpdatable(){
-		let el = this.closest("template,nmd-context,nmd-b[for]");
+		let el = this.parentElement.closest("template,nmd-context,nmd-b[for]");
 		return el instanceof NmdContext;
 	}
 

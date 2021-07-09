@@ -6,21 +6,35 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Document</title>
 	<script src="dist/nmd-template-engine.js"></script>
+	<script>
+		function eatApple(){
+			let idx = this.items.indexOf("apple");
+			if(idx >= 0){
+				this.health += 5;
+				this.items.splice(idx, 1);
+			} else {
+				alert("You got no apples!");
+			}
+		}
+	</script>
 </head>
 <body>
-	<nmd-context value="{health:5, items:['apple', 'sword']}">
+	<nmd-context value="{health:5, items:['apple', 'sword'], eatApple}">
 		Hello traveler!<br>
-		Health: <nmd-b text="this.health"></nmd-b>
-		<button onclick="NmdContext.find(this).value.health--;NmdContext.find(this).update()">1 dmg</button>
+		<meter data-nmd-ctx data-nmd-value="this.health" min="0" max="10"></meter><br>
+		Health: <nmd-b text="this.health"></nmd-b><br>
+		<button onclick="NmdContext.findAndUpdate(this).value.health--">Stab yourself</button><br>
 		<nmd-b if="this.health &lt;= 0">
 			You are dead.
 		</nmd-b>
 		<nmd-b if="this.health > 0">
 			You look great.
-		</nmd-b>
+		</nmd-b><br>
+		Inventory: 
 		<nmd-b for="a of this.items">
 			<nmd-b text="a"></nmd-b>
 		</nmd-b>
+		<button onclick="NmdContext.findAndUpdate(this).value.eatApple()">Eat apple.</button><br>
 	</nmd-context>
 </body>
 </html>
