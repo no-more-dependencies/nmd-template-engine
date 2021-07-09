@@ -16,6 +16,7 @@ class NmdBlock extends HTMLParsedElement {
 
 	parsedCallback(){
 		if(this.hasAttribute("for")){ // Update for loop after content is parsed.
+			/** @type {DocumentFragment} for loop items' template */
 			this.template = document.createDocumentFragment();
 			let nodes = [...this.childNodes];
 			for(let child of nodes){

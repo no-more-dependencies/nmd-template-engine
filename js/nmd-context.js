@@ -24,6 +24,10 @@ class NmdContext extends HTMLParsedElement {
 		return context;
 	}
 
+	/**
+	 * Update element. Either NmdBlock element or element containing nmd attributes.
+	 * @param {HTMLElement} element 
+	 */
 	static updateElement(element){
 		if(element instanceof NmdBlock)
 			element.update();
@@ -32,6 +36,9 @@ class NmdContext extends HTMLParsedElement {
 	}
 
 	static updateElementAttributes(element){
+		let context = NmdContext.find(element).getScope();
+		if(!(context instanceof NmdContext))
+			throw new Error("Element does not have parent context element.");
 		for(let attr of element.getAttributeNames()){
 			let toAttr = null;
 			if(attr.startsWith("data-nmd-"))
@@ -40,25 +47,21 @@ class NmdContext extends HTMLParsedElement {
 				toAttr = attr.substr(4);
 			if(toAttr === null)
 				continue;
-			let result = evaluateCode(element.getAttribute(attr), NmdContext.find(element).getScope(), true);
+			let result = evaluateCode(element.getAttribute(attr), context, true);
 			element.setAttribute(toAttr, result);
 		}
 	}
 
 	constructor(){
 		super();
-		/** @type {string?} */
+		/** @type {string?} variable name, null for "this". */
 		this.name = null;
 		this.value = {};
 	}
 
 	connectedCallback(){
 		super.connectedCallback();
-		if(this.hasAttribute("value")){
-			let value = this.getAttribute("value");
-			if(value)
-				this.value = evaluateCode(value, [this, {}], true);
-		}
+		this.initializeValue();
 	}
 
 	parsedCallback(){
@@ -66,6 +69,20 @@ class NmdContext extends HTMLParsedElement {
 		this.updateElementAttributes();
 	}
 
+	/**
+	 * Evaluates value attribute. Calling this will replace your previous value state.
+	 */
+	initializeValue(){
+		if(this.hasAttribute("value")){
+			let value = this.getAttribute("value");
+			if(value)
+				this.value = evaluateCode(value, [this, {}], true);
+		}
+	}
+
+	/**
+	 * Update children NmdBlock elements and other elements attributes.
+	 */
 	update(){
 		for(let block of this.querySelectorAll("nmd-b")){
 			if(block.isConnected)
@@ -75,12 +92,18 @@ class NmdContext extends HTMLParsedElement {
 		this.updateElementAttributes();
 	}
 
+	/**
+	 * Update children elements attributes.
+	 */
 	updateElementAttributes(){
 		for(let element of this.querySelectorAll("[data-nmd-ctx], [nmd-ctx]")){
 			NmdContext.updateElementAttributes(element);
 		}
 	}
 
+	/**
+	 * @returns {[any, Object]} scope for code evaluator
+	 */
 	getScope(){
 		let parent = this.parentElement.closest("nmd-context");
 		let scope = [undefined, {}];
