@@ -23,7 +23,7 @@
 		Hello traveler!<br>
 		<meter data-nmd-ctx data-nmd-value="this.health" min="0" max="10"></meter><br>
 		Health: <nmd-b text="this.health"></nmd-b><br>
-		<button onclick="NmdContext.findAndUpdate(this).value.health--">Stab yourself</button><br>
+		<button onclick="NmdCtx.u(this).health--">Stab yourself</button><br>
 		<nmd-b if="this.health &lt;= 0">
 			You are dead.
 		</nmd-b>
@@ -34,7 +34,12 @@
 		<nmd-b for="a of this.items">
 			<nmd-b text="a"></nmd-b>
 		</nmd-b>
-		<button onclick="NmdContext.findAndUpdate(this).value.eatApple()">Eat apple.</button><br>
+		<nmd-b if="this.spells">
+			<nmd-b for="spell of this.spells"><!-- No error caused by undefined property. Not running because of parent block. -->
+				<nmd-b text="spell"></nmd-b>
+			</nmd-b>
+		</nmd-b>
+		<button onclick="NmdCtx.u(this).eatApple()" data-nmd-ctx data-nmd-hidden="this.items.includes('apple')?undefined:true">Eat apple.</button><br>
 	</nmd-context>
 </body>
 </html>

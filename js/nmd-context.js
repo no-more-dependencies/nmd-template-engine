@@ -35,8 +35,12 @@ class NmdContext extends HTMLParsedElement {
 			this.updateElementAttributes(element);
 	}
 
+	/**
+	 * Update nmd attributes of element.
+	 * @param {HTMLElement} element 
+	 */
 	static updateElementAttributes(element){
-		let context = NmdContext.find(element).getScope();
+		let context = NmdContext.find(element);
 		if(!(context instanceof NmdContext))
 			throw new Error("Element does not have parent context element.");
 		for(let attr of element.getAttributeNames()){
@@ -47,8 +51,11 @@ class NmdContext extends HTMLParsedElement {
 				toAttr = attr.substr(4);
 			if(toAttr === null)
 				continue;
-			let result = evaluateCode(element.getAttribute(attr), context, true);
-			element.setAttribute(toAttr, result);
+			let result = evaluateCode(element.getAttribute(attr), context.getScope(), true);
+			if(typeof(result) === "undefined")
+				element.removeAttribute(toAttr);
+			else
+				element.setAttribute(toAttr, result);
 		}
 	}
 
@@ -84,7 +91,7 @@ class NmdContext extends HTMLParsedElement {
 	 * Update children NmdBlock elements and other elements attributes.
 	 */
 	update(){
-		for(let block of this.querySelectorAll("nmd-b")){
+		for(/** @type {NmdBlock} */ let block of this.querySelectorAll("nmd-b")){
 			if(block.isConnected)
 				block.update();
 		}

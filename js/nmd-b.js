@@ -10,19 +10,28 @@ class NmdBlock extends HTMLParsedElement {
 
 	connectedCallback(){
 		super.connectedCallback();
-		if(!this.hasAttribute("for")) // If it does not require content to be parsed, update it now.
-			this.update();
+		try {
+			if(!this.hasAttribute("for")) // If it does not require content to be parsed, update it now.
+				this.update();
+		} catch(e){
+			console.error(this, e);
+		}
 	}
 
 	parsedCallback(){
-		if(this.hasAttribute("for")){ // Update for loop after content is parsed.
-			/** @type {DocumentFragment} for loop items' template */
-			this.template = document.createDocumentFragment();
-			let nodes = [...this.childNodes];
-			for(let child of nodes){
-				this.template.append(child);
+		try {
+			if(this.hasAttribute("for")){ // Update for loop after content is parsed.
+				/** @type {DocumentFragment} for loop items' template */
+				this.template = document.createDocumentFragment();
+				let nodes = [...this.childNodes];
+				for(let child of nodes){
+					this.template.append(child);
+				}
+				if(this.isUpdatable())
+				this.runLoop();
 			}
-			this.runLoop();
+		} catch(e){
+			console.error(this, e);
 		}
 	}
 
@@ -92,7 +101,8 @@ class NmdBlock extends HTMLParsedElement {
 	}
 
 	isUpdatable(){
-		let el = this.parentElement.closest("template,nmd-context,nmd-b[for]");
+		// Selectors order determines priority
+		let el = this.parentElement.closest("nmd-b[hidden],template,nmd-context,nmd-b[for]");
 		return el instanceof NmdContext;
 	}
 
