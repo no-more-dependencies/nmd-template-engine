@@ -21,18 +21,28 @@ class NmdBlock extends HTMLParsedElement {
 	parsedCallback(){
 		try {
 			if(this.hasAttribute("for")){ // Update for loop after content is parsed.
-				/** @type {DocumentFragment} for loop items' template */
-				this.template = document.createDocumentFragment();
-				let nodes = [...this.childNodes];
-				for(let child of nodes){
-					this.template.append(child);
+				if(!(this.firstElementChild instanceof HTMLTemplateElement)){
+					/** @type {HTMLTemplateElement} */
+					let templateElement = document.createElement("template");
+					let nodes = [...this.childNodes];
+					for(let child of nodes){
+						templateElement.content.append(child);
+					}
+					this.append(templateElement);
 				}
 				if(this.isUpdatable())
-				this.runLoop();
+					this.runLoop();
 			}
 		} catch(e){
 			console.error(this, e);
 		}
+	}
+
+	get template(){
+		let firstChild = this.firstElementChild;
+		if(firstChild instanceof HTMLTemplateElement)
+			return firstChild.content;
+		return undefined;
 	}
 
 	/**
@@ -69,7 +79,9 @@ class NmdBlock extends HTMLParsedElement {
 		let def = this.getAttribute("for");
 		if(def === null)
 			return;
-		this.innerHTML = "";
+		while(this.firstElementChild?.nextElementSibling){
+			this.removeChild(this.firstElementChild.nextElementSibling);
+		}
 		let parts = def.split(/\s+of\s+/);
 		if(parts.length != 2){
 			console.error(`Wrong for syntax. Expected "item of items".`, this);

@@ -1,6 +1,6 @@
 {
 	"name": "nmd-template-engine",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Simple template engine using web components.",
 	"main": "./js/main.js",
 	"browser": "./dist/nmd-template-engine.js",
